@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Dashboard in Vue JS</title>
+	<style>
+		/* reset */
+			body{
+				padding: 0;
+				margin: 0;
+			}
+		/* end reset */
+
+		.container-geral{
+			background: #c1c1c1;
+		}
+
+		.grid{
+			display: grid;
+		}
+
+		.container .item .box{
+			background: #fff;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 150px;
+			margin: 10px;
+			border-radius:5px;
+		}
+
+		.container .subgrid .box:first-child{
+			margin-top: 10px;
+			margin-bottom: 20px;
+		}
+
+		.container .graph .box{
+			height: 310px;
+		}
+
+		@media(min-width: 768px){
+
+			.grid-template-columns-4{
+				grid-template-columns: 1fr 2fr 2fr 1fr;
+			}
+
+			.container .subgrid .box:first-child{
+				margin-top: 10px;
+				margin-bottom: 10px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="container-geral">
+		<section id="containerInfo1" class="container grid grid-template-columns-4">
+			<div class="item subgrid">
+				<div class="box">facebook</div>
+				<div class="box">YouTube</div>
+			</div>
+			<div class="item graph"><div class="box">graph 1</div></div>
+			<div class="item graph"><div class="box">graph 2</div></div>
+			<div class="item subgrid">
+				<div class="box">google ranking</div>
+				<div class="box">Trust</div>
+			</div>
+		</section>
+
+		<section id="containerInfo2" class="container grid grid-template-columns-4">
+			<div class="item subgrid">
+				<div class="box">facebook</div>
+				<div class="box">YouTube</div>
+			</div>
+			<div class="item graph"><div class="box">graph 1</div></div>
+			<div class="item graph"><div class="box">graph 2</div></div>
+			<div class="item graph subgrid">
+				<div class="box">google ranking</div>
+			</div>
+		</section>
+	</div>
+
+	<script>
+		//Authorization: Basic MTIzNDU=7fa2e286-e445-472a-b3a8-ee7144c9c67f
+		redirect_uri = 'https://wakatime.com/oauth/test'
+state = hashlib.sha1(os.urandom(40)).hexdigest()
+params = {'scope': 'email,read_stats',
+          'response_type': 'code',
+          'state': state,
+          'redirect_uri': redirect_uri}
+	</script>
+</body>
+</html>
