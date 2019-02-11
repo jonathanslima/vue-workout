@@ -4,78 +4,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-
+	<link rel="stylesheet" href="css/style.css">
 	<title>Dashboard in Vue JS</title>
-	<style>
-		/* reset */
-			body{
-				padding: 0;
-				margin: 0;
-				font-family: 'Roboto', sans-serif;
-			}
-		/* end reset */
-
-		.container-geral{
-			background: #c1c1c1;
-		}
-
-		.grid{
-			display: grid;
-		}
-
-		.container .item .box{
-			background: #fff;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 150px;
-			margin: 10px;
-			border-radius: 5px;
-			flex-direction: column;
-		}
-
-		.container .item .unique{
-			height: 310px;
-		}
-
-		.container .item .unique .ltt-mini{
-			font-size: 10px;
-			margin-top: 5px;
-		}
-
-		.container .item .box .big{
-			font-weight: bold;
-			font-size: 24px;
-			padding-bottom: 5px;
-		}
-
-		.container .subgrid .box:first-child{
-			margin-top: 10px;
-			margin-bottom: 20px;
-		}
-
-		.container .graph .box{
-			height: 310px;
-		}
-
-		.box .img-person{
-			width: 50%;
-			margin-left: 25%;
-			border-radius: 50%;
-		}
-
-		@media(min-width: 768px){
-
-			.grid-template-columns-4{
-				grid-template-columns: 1fr 2fr 2fr 1fr;
-			}
-
-			.container .subgrid .box:first-child{
-				margin-top: 10px;
-				margin-bottom: 10px;
-			}
-		}
-	</style>
 </head>
 <body>
 	<div class="container-geral">
@@ -144,7 +74,7 @@
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 	<script>
-		let res;
+		let res, stargazes;
 		let user = 'jonathanslima';
 		let getUserData = ()=>{
 			fetch('https://api.github.com/users/' + user, {
@@ -171,12 +101,19 @@
 		    })
 		    .then(function (json) {
 		    	res = json;
-				mountChartThree();
-				// mountChartFour();
-				// mountChartFive();
-				// mountChartSix();
+	    		stargazes = [];
 
-				console.log('repos: ', res);
+		    	res.map(function(i){
+		    		stargazes.push(i.stargazers_count)
+		    	});
+
+		    	let starsOrder = stargazes.sort(function(a,b){
+					return b - a;
+				});
+
+				mountChartFour();
+
+				return starsOrder;
 		    });
 		};
 
@@ -190,7 +127,6 @@
 		    .then(function (json) {
 		    	res = json;
 				// mountChartThree();
-				// mountChartFour();
 				// mountChartFive();
 				// mountChartSix();
 
@@ -326,12 +262,12 @@
 
 		const mountChartFour = ()=>{
 			let Chart4 = new Chart(ctx4, {
-			    type: 'pie',
+			    type: 'line',
 			    data: {
-			        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+			        labels: ["Red", "Blue", "Yellow", "Green", "Purple"],
 			        datasets: [{
-			            label: '# of Votes',
-			            data: [12, 19, 3, 5, 2, 3],
+			            label: 'Repo Stars',
+			            data: [12, 19, 3, 5, 2],
 			            backgroundColor: [
 			                'rgba(255, 99, 132, 0.2)',
 			                'rgba(54, 162, 235, 0.2)',
@@ -355,7 +291,8 @@
 			        scales: {
 			            yAxes: [{
 			                ticks: {
-			                    beginAtZero:true
+			                    beginAtZero:true,
+			                    max: 100
 			                }
 			            }]
 			        }
