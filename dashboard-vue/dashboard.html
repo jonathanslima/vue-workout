@@ -3,12 +3,15 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
 	<title>Dashboard in Vue JS</title>
 	<style>
 		/* reset */
 			body{
 				padding: 0;
 				margin: 0;
+				font-family: 'Roboto', sans-serif;
 			}
 		/* end reset */
 
@@ -27,7 +30,23 @@
 			align-items: center;
 			height: 150px;
 			margin: 10px;
-			border-radius:5px;
+			border-radius: 5px;
+			flex-direction: column;
+		}
+
+		.container .item .unique{
+			height: 310px;
+		}
+
+		.container .item .unique .ltt-mini{
+			font-size: 10px;
+			margin-top: 5px;
+		}
+
+		.container .item .box .big{
+			font-weight: bold;
+			font-size: 24px;
+			padding-bottom: 5px;
 		}
 
 		.container .subgrid .box:first-child{
@@ -37,6 +56,12 @@
 
 		.container .graph .box{
 			height: 310px;
+		}
+
+		.box .img-person{
+			width: 50%;
+			margin-left: 25%;
+			border-radius: 50%;
 		}
 
 		@media(min-width: 768px){
@@ -56,33 +81,365 @@
 	<div class="container-geral">
 		<section id="containerInfo1" class="container grid grid-template-columns-4">
 			<div class="item subgrid">
-				<div class="box">facebook</div>
-				<div class="box">YouTube</div>
+				<div class="box unique">
+					<span class="big"><img data-img="dev" class="img-person" src="img/person.png" alt=""></span>
+					<span class="ltt" data-name="login">name</span>
+					<span class="ltt" data-company="company">company</span>
+					<span class="ltt ltt-mini" data-bio="bio">bio</span>
+					<span class="ltt ltt-mini" data-local="local">location</span>
+				</div>
 			</div>
-			<div class="item graph"><div class="box">graph 1</div></div>
-			<div class="item graph"><div class="box">graph 2</div></div>
+
+			<div class="item graph">
+				<div class="box">
+					<h1 class="title">Total repositories</h1>
+					<canvas id="Chart1"></canvas>
+				</div>
+			</div>
+
+			<div class="item graph">
+				<div class="box">
+					<h1 class="title">Followers x Following</h1>
+					<canvas id="Chart2"></canvas>
+				</div>
+			</div>
+
 			<div class="item subgrid">
-				<div class="box">google ranking</div>
-				<div class="box">Trust</div>
+				<div class="box">
+					<span class="big" data-repos="repos">25%</span>
+					<span class="ltt">Repositories owner</span>
+				</div>
+				<div class="box">
+					<canvas id="Chart3"></canvas>
+				</div>
 			</div>
 		</section>
 
 		<section id="containerInfo2" class="container grid grid-template-columns-4">
 			<div class="item subgrid">
-				<div class="box">facebook</div>
-				<div class="box">YouTube</div>
+				<div class="box">
+					<span class="big">3,000</span>
+					<span class="ltt">Info title</span>
+				</div>
+				<div class="box">
+					<span class="big">3,000</span>
+					<span class="ltt">Info title</span>
+				</div>
 			</div>
-			<div class="item graph"><div class="box">graph 1</div></div>
-			<div class="item graph"><div class="box">graph 2</div></div>
+			<div class="item graph">
+				<div class="box">
+					<canvas id="Chart4"></canvas>
+				</div>
+			</div>
+			<div class="item graph"><div class="box">
+				<canvas id="Chart5"></canvas>
+			</div></div>
 			<div class="item graph subgrid">
-				<div class="box">google ranking</div>
+				<div class="box">
+					<canvas id="Chart6"></canvas>
+				</div>
 			</div>
 		</section>
 	</div>
 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 	<script>
+		let res;
+		let user = 'jonathanslima';
+		let getUserData = ()=>{
+			fetch('https://api.github.com/users/' + user, {
+			    method: 'GET'
+			})
+			.then(function (res) {
+		        return res.json();
+		    })
+		    .then(function (json) {
+		    	res = json;
+
+				fillData.init();
+				mountChartOne();
+				mountChartTwo();
+		    });
+		};
+
+		let getUserRepos = ()=>{
+			fetch('https://api.github.com/users/' + user + '/repos?per_page=100', {
+			    method: 'GET'
+			})
+			.then(function (res) {
+		        return res.json();
+		    })
+		    .then(function (json) {
+		    	res = json;
+				mountChartThree();
+				// mountChartFour();
+				// mountChartFive();
+				// mountChartSix();
+
+				console.log('repos: ', res);
+		    });
+		};
+
+		let getStarredRepos = ()=>{
+			fetch('https://api.github.com/users/' + user + '/starred?per_page=100', {
+			    method: 'GET'
+			})
+			.then(function (res) {
+		        return res.json();
+		    })
+		    .then(function (json) {
+		    	res = json;
+				// mountChartThree();
+				// mountChartFour();
+				// mountChartFive();
+				// mountChartSix();
+
+				console.log('starred: ', res);
+		    });
+		};
+
+		const fillData = {
+			fillCardDev: ()=>{
+				document.querySelector('[data-img="dev"]').setAttribute('src', res.avatar_url);
+				document.querySelector('[data-name="login"]').textContent = res.login;
+				document.querySelector('[data-company="company"]').textContent = res.company;
+				document.querySelector('[data-bio="bio"]').textContent = res.bio;
+				document.querySelector('[data-local="local"]').textContent = res.location;
+			},
+			fillChartFollowers: ()=>{
+				console.log(res);
+				return res.followers;
+			},
+			fillChartFollowing: ()=>{
+				return res.following;
+			},
+			fillPublicGists: ()=>{
+				return res.public_gists;
+			},
+			fillPublicRepos: ()=>{
+				document.querySelector('[data-repos="repos"]').textContent = res.public_repos;
+				return res.public_repos;
+			},
+			init: ()=>{
+				fillData.fillCardDev();
+				fillData.fillPublicRepos();
+			}
+		};
+
+		getUserData();
+		getUserRepos();
+		getStarredRepos();
+	</script>
+	
+	<script>
+	</script>
+	<script>
+		let ctx1 = document.getElementById("Chart1").getContext('2d');
+		let ctx2 = document.getElementById("Chart2").getContext('2d');
+		let ctx3 = document.getElementById("Chart3").getContext('2d');
+		let ctx4 = document.getElementById("Chart4").getContext('2d');
+		let ctx5 = document.getElementById("Chart5").getContext('2d');
+		let ctx6 = document.getElementById("Chart6").getContext('2d');
+
+		const mountChartOne = ()=>{
+			let Chart1 = new Chart(ctx1, {
+			    type: 'pie',
+			    data: {
+			        labels: ["Repositories", 'Goal'],
+			        datasets: [{
+			            label: 'Repositories',
+			            data: [fillData.fillPublicRepos(), 100 - fillData.fillPublicRepos()],
+			            backgroundColor: [
+			                'rgba(44, 62, 80, 1)',
+			                'rgba(189, 195, 199, 1)'
+			            ],
+			            borderColor: [
+			                'rgba(44, 62, 80, 1)',
+			                'rgba(189, 195, 199, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    }
+			});
+		};
 		
-		
+		const mountChartTwo = ()=>{
+			let Chart2 = new Chart(ctx2, {
+			    type: 'doughnut',
+			    data: {
+			        labels: ["Followers", 'Following'],
+			        datasets: [{
+			            label: '# of Votes',
+			            data: [fillData.fillChartFollowers(), fillData.fillChartFollowing()],
+			            backgroundColor: [
+			                'rgba(124, 204, 99, 1)',
+			                'rgba(44, 62, 80, 0.5)'
+			            ],
+			            borderColor: [
+			                'rgba(124, 204, 99, 1)',
+			                'rgba(44, 62, 80, 0.5)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    }
+			});
+		};
+
+		const mountChartThree = ()=>{
+			let Chart3 = new Chart(ctx3, {
+			    type: 'line',
+			    data: {
+			        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+			        datasets: [{
+			            label: '# of Votes',
+			            data: [12, 19, 3, 5, 2, 3],
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255,99,132,1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    },
+			    options: {
+			        scales: {
+			            yAxes: [{
+			                ticks: {
+			                    beginAtZero:true
+			                }
+			            }]
+			        }
+			    }
+			});
+		};
+
+		const mountChartFour = ()=>{
+			let Chart4 = new Chart(ctx4, {
+			    type: 'pie',
+			    data: {
+			        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+			        datasets: [{
+			            label: '# of Votes',
+			            data: [12, 19, 3, 5, 2, 3],
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255,99,132,1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    },
+			    options: {
+			        scales: {
+			            yAxes: [{
+			                ticks: {
+			                    beginAtZero:true
+			                }
+			            }]
+			        }
+			    }
+			});
+		};
+
+		const mountChartFive = ()=>{
+			let Chart5 = new Chart(ctx5, {
+			    type: 'line',
+			    data: {
+			        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+			        datasets: [{
+			            label: '# of Votes',
+			            data: [12, 19, 3, 5, 2, 3],
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255,99,132,1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    },
+			    options: {
+			        scales: {
+			            yAxes: [{
+			                ticks: {
+			                    beginAtZero:true
+			                }
+			            }]
+			        }
+			    }
+			});
+		};
+
+		const mountChartSix = ()=>{
+			let Chart6 = new Chart(ctx6, {
+			    type: 'bar',
+			    data: {
+			        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+			        datasets: [{
+			            label: '# of Votes',
+			            data: [12, 19, 3, 5, 2, 3],
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255,99,132,1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    },
+			    options: {
+			        scales: {
+			            yAxes: [{
+			                ticks: {
+			                    beginAtZero:true
+			                }
+			            }]
+			        }
+			    }
+			});
+		};
 	</script>
 </body>
 </html>
