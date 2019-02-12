@@ -56,6 +56,15 @@
 }
 
 @media(min-width: 768px){
+	#Chart3,
+	#Chart4{
+		height: 95% !important;
+		width: auto !important;
+	}
+
+	.grid-template-columns-2{
+		grid-template-columns: 6fr 6fr;
+	}
 
 	.grid-template-columns-4{
 		grid-template-columns: 1fr 2fr 2fr 1fr;
