@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>VUE - Mastery Course - Basics</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css"></link>
+</head>
+<body>
+	<div class="nav-bar"></div>
+	
+	<div id="app">
+		<div class="product">
+			<div class="product-image">
+				<a v-bind:href="link">
+					<img v-bind:src="image" v-bind:alt="description">
+				</a>
+			</div>
+
+			<div class="product-info">
+				<h1>{{ product }}</h1>
+				<p v-if="stock >= 10">In stock</p>		
+				<p v-else-if="stock < 10 && stock > 0">Almost sold out!</p>
+				<p v-else="stock == 0">Out of stock</p>		
+			</div>
+
+			<ul>
+				<li v-for="detail in details">{{ details }}</li>
+			</ul>
+		</div>
+	</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>
