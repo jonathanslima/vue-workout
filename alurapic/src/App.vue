@@ -1,85 +1,91 @@
-<template>
-  <div id="app">
-    <h1 class="centralizado">{{ title }}</h1>
 
-    <input type="search" class="filtro" placeholder="Filtrar por titulo" @input="filtro = $event.target.value" />
+<template>
+  <div class="corpo">
+    <h1 class="centralizado">{{ titulo }}</h1>
+
+    <input type="search" class="filtro" @input="filtro = $event.target.value" placeholder="filtre por parte do título">
 
     <ul class="lista-fotos">
-      <li class="lista-fotos-item" v-for="image in imageFiltered">
-        <!-- Add component passing data to it -->
-        <meu-painel :titulo="image.titulo">
-          <imagem-responsiva :url="image.url" :titulo="image.titulo"></imagem-responsiva>
+      <li class="lista-fotos-item" v-for="foto of fotosComFiltro">
+
+        <meu-painel :titulo="foto.titulo">
+            <imagem-responsiva :url="foto.url" :titulo="foto.titulo"/>
         </meu-painel>
+
       </li>
     </ul>
+
   </div>
 </template>
 
 <script>
-// Import component  
 import Painel from './components/shared/painel/Painel.vue';
-import ImagemResponsiva from './components/shared/imagem-reponsiva/ImagemResponsiva.vue';
+import ImagemResponsiva from './components/shared/imagem-responsiva/ImagemResponsiva.vue';
 
-// declare painel to use at page
 export default {
+
   components: {
-    "meu-painel": Painel,
-    "imagem-responsiva": ImagemResponsiva,
+    'meu-painel' : Painel, 
+    'imagem-responsiva': ImagemResponsiva
   },
-  data () {
-    return{
-      title: 'Alurapic2',
-      images: [],
+
+  data() {
+
+    return {
+
+      titulo: 'Alurapic', 
+      fotos: [], 
       filtro: ''
     }
   },
-  computed: {
-    imageFiltered(){
-      if(this.filtro){
-        let exp = new RegExp(this.filtro.trim(), 'i');
-        return this.images.filter(image => exp.test(image.titulo));
 
-      }else{
-        return this.images;
+  computed: {
+
+    fotosComFiltro() {
+
+      if(this.filtro) {
+        let exp = new RegExp(this.filtro.trim(), 'i');
+        return this.fotos.filter(foto => exp.test(foto.titulo));
+      } else {
+        return this.fotos;
       }
     }
   },
-  created (){
-    // call a promise
-    let promise = this.$http.get('http://localhost:3000/v1/fotos');
 
-    // resolve promise and then get data
-    promise
+  created() {
+
+    this.$http.get('http://localhost:3000/v1/fotos')
       .then(res => res.json())
-      .then(images => this.images = images, err => console.log(err))
+      .then(fotos => this.fotos = fotos, err => console.log(err));
   }
 }
+
 </script>
 
 <style>
-  body{
-    font-family: Helvetica;
+  .corpo {
+    font-family: Helvetica, sans-serif;
     width: 96%;
     margin: 0 auto;
   }
 
-  .centralizado{
+  .centralizado {
+
     text-align: center;
   }
 
-  .lista-fotos{
+  .lista-fotos {
     list-style: none;
-    padding: 0
   }
 
-  .lista-fotos-item{
+  .lista-fotos .lista-fotos-item {
+
     display: inline-block;
-    width: 22%;
-    margin: 0 1.5%;
   }
 
-  .filtro{
+  .filtro {
+
+    display: block;
     width: 100%;
-    padding: 10px;
   }
 </style>
