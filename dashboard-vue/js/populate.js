@@ -19,18 +19,19 @@ let getUserData = ()=>{
 		mountChartOne();
 		mountChartTwo();
 	})
-	.catch(error => alert(`Some error: ${error}`));
+	.catch(error => alert('There is no username'));
 };
 
 let getUserRepos = ()=>{
 	fetch('https://api.github.com/users/' + user + '/repos?per_page=100')
 	.then(res => res.json())
-    .then(function (json) {
-    	res = json;
-    	getDataRepo(res);
-    	getLanguagesRepo(res);
-    	sumStars(res);
-    });
+	.then(function (json) {
+		res = json;
+		getDataRepo(res);
+		getLanguagesRepo(res);
+		sumStars(res);
+	})
+	.catch(error => alert('There is no repo to this username'));
 };
 
 let getDataRepo = (res)=>{
