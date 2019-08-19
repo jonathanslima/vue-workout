@@ -12,13 +12,14 @@ let res, starsOrder;
 let getUserData = ()=>{
 	fetch('https://api.github.com/users/' + user)
 	.then(res => res.json())
-    .then(function (json) {
-    	res = json;
+	.then(function (json) {
+		res = json;
 
 		fillData.init();
 		mountChartOne();
 		mountChartTwo();
-    });
+	})
+	.catch(error => alert(`Some error: ${error}`));
 };
 
 let getUserRepos = ()=>{
